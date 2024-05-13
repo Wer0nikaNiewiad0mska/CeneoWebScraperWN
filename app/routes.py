@@ -1,13 +1,32 @@
 from app import app
-from flask import render_template
+from flask import render_template, request, redirect, url_for
+from bs4 import BeautifulSoup
+import requests
 
 @app.route('/')
 @app.route('/index')
 def index():
     return render_template("index.html")
 
-@app.route('/extract')
+@app.route('/extract', methods=['POST','GET'])
 def extract():
+    if request.method == 'POST':
+        product_id = request.form.get('product_id')
+        url = f"https://www.ceneo.pl/{product_id}"
+        response = requests.get(url)
+        if response.status_code == requests.codes['ok']:
+            page_dom = BeautifulSoup(response.text, "html.parser")
+            try:
+                opinions_count = page_dom.select_one("a.product-review_link > span").get_text().strip()
+            except AttributeError:
+                opinions_count = 0
+            if opinions_count:
+                #proces ekstrakcji
+                return redirect(url_for('product', product_id=product_id))
+            error = "Dla produktu o podanym id nie ma opinii"
+            return render_template("extract.html", error=error)
+        error = "Taki produkt nie istnieje"
+        return render_template("extract.html", error=error)
     return render_template("extract.html")
 
 @app.route('/products')
