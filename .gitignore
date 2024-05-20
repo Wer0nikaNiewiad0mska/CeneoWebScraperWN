@@ -162,3 +162,7 @@ cython_debug/
 
 # Visual Studio Code
 .vscode/
+
+# App
+
+app/data
