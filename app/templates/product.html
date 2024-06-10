@@ -1,4 +1,18 @@
 {% extends "base.html" %}
+{% block title %}To jest strona z opiniamii o produkcie {{ product_id }}.{% endblock %}
+
 {% block content %}
-    <p>To jest strona z opiniami o produkcie {{product_id}}.</p>
+<div class="container mt-5">
+    <h4>Pobierz opinie:</h4>
+    <div class="mb-3"></div>
+    <div class="btn-toolbar d-flex justify-content-center" role="toolbar" aria-label="Toolbar with button groups">
+        <div class="btn-group" role="group" aria-label="First group">
+            <a href="{{ url_for('download_json', product_id=product_id) }}" class="btn my-custom-outline" role="button">Pobierz JSON</a>
+            <a href="{{ url_for('download_csv', product_id=product_id) }}" class="btn my-custom-outline" role="button">Pobierz CSV</a>
+            <a href="{{ url_for('download_xlsx', product_id=product_id) }}" class="btn my-custom-outline" role="button">Pobierz Excel</a>
+        </div>
+    </div>
+    <div class="mb-4"></div>
+</div>
+{{ opinions | safe }}
 {% endblock %}

@@ -1,5 +1,40 @@
 {% extends "base.html" %}
+
 {% block title %}Lista produktów{% endblock %}
+
 {% block content %}
-    {{products}}
+<div class="container mt-5">
+    <div class="row">
+        {% for product in products %}
+            <div class="col-12 mb-4">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{{ url_for('product', product_id=product['product_id']) }}" class="custom-card-link">
+                                {{ product['product_name'] }}
+                            </a>
+                        </h5>
+                        <p class="card-text">
+                            <strong>Id opinii:</strong> {{ product['product_id'] }}<br>
+                            <strong>Liczba opinii:</strong> {{ product['opinions_count'] }}<br>
+                            <strong>Liczba zalet:</strong> {{ product['pros_count'] }}<br>
+                            <strong>Liczba wad:</strong> {{ product['cons_count'] }}<br>
+                            <strong>Średnia ocena:</strong> {{ product['average_rating'] }}<br>
+                        </p>
+                        <hr>
+                        <strong>Pobierz opinie:</strong><br>
+                        <div class="mb-3"></div>
+                        <div class="btn-toolbar d-flex justify-content-center" role="toolbar" aria-label="Toolbar with button groups">
+                            <div class="btn-group" role="group" aria-label="First group">
+                                <a href="{{ url_for('download_json', product_id=product['product_id']) }}" class="btn my-custom-outline" role="button">Pobierz JSON</a>
+                                <a href="{{ url_for('download_csv', product_id=product['product_id']) }}" class="btn my-custom-outline" role="button">Pobierz CSV</a>
+                                <a href="{{ url_for('download_xlsx', product_id=product['product_id']) }}" class="btn my-custom-outline" role="button">Pobierz Excel</a>
+                            </div>
+                        </div>                    
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

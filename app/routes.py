@@ -90,7 +90,16 @@ def author():
 
 @app.route('/product/<product_id>')
 def product(product_id):
-    return render_template("product.html", product_id=product_id)
+    with open(f"app/data/opinions/{product_id}.json", "r", encoding="UTF-8") as jf:
+        opinions_data = json.load(jf)
+
+    opinions_df = pd.DataFrame(opinions_data)
+
+    sort_by = request.args.get('sort_by')
+    if sort_by in opinions_df.columns:
+        opinions_df = opinions_df.sort_values(by=sort_by)
+
+    return render_template('product.html', product_id=product_id, opinions=opinions_df.to_html(classes='table table-striped', index=False))
 
 @app.route('/product/download_json/<product_id>')
 def download_json(product_id):
@@ -104,4 +113,9 @@ def download_csv(product_id):
 
 @app.route('/product/download_xlsx/<product_id>')
 def download_xlsx(product_id):
-    pass
+    opinions = pd.read_json(f"app/data/opinions/{product_id}.json")
+    buffer = io.BytesIO()
+    with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+        opinions.to_excel(writer, index=False, sheet_name='Opinions')
+    buffer.seek(0)
+    return send_file(buffer, as_attachment=True, download_name=f"{product_id}.xlsx", mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
