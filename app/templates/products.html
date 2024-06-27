@@ -4,15 +4,22 @@
 
 {% block content %}
 <div class="container mt-5">
+    <div class="row mb-3">
+        <div class="col-12">
+            <h2>Sortuj według:</h2>
+            <a href="{{ url_for('products', sort_by='product_name', order='asc') }}" class="btn my-custom-outline" role="button">Nazwa A-Z</a>
+            <a href="{{ url_for('products', sort_by='product_name', order='desc') }}" class="btn my-custom-outline" role="button">Nazwa Z-A</a>
+            <a href="{{ url_for('products', sort_by='average_rating', order='asc') }}" class="btn my-custom-outline" role="button">Ocena rosnąco</a>
+            <a href="{{ url_for('products', sort_by='average_rating', order='desc') }}" class="btn my-custom-outline" role="button">Ocena malejąco</a>
+        </div>
+    </div>
     <div class="row">
         {% for product in products %}
             <div class="col-12 mb-4">
                 <div class="card custom-card">
                     <div class="card-body">
                         <h5 class="card-title">
-                            <a href="{{ url_for('product', product_id=product['product_id']) }}" class="custom-card-link">
-                                {{ product['product_name'] }}
-                            </a>
+                            {{ product['product_name'] }}
                         </h5>
                         <p class="card-text">
                             <strong>Id opinii:</strong> {{ product['product_id'] }}<br>
@@ -37,4 +44,4 @@
         {% endfor %}
     </div>
 </div>
-{% endblock %}
+{%endblock%}

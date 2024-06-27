@@ -79,15 +79,40 @@ def extract():
 def products():
     products_list = [filename.split(".")[0] for filename in os.listdir("app/data/opinions")]
     products = []
+    
     for product_id in products_list:
         with open(f"app/data/stats/{product_id}.json", "r", encoding="UTF-8") as jf:
-            products.append(json.load(jf))
-    return render_template("products.html", products = products)
+            product_stats = json.load(jf)
+            products.append(product_stats)
+    
+    sort_by = request.args.get('sort_by', 'product_name')
+    order = request.args.get('order', 'asc')
+    df = pd.DataFrame(products)
+    if order == 'desc':
+        df_sorted = df.sort_values(by=sort_by, ascending=False)
+    else:
+        df_sorted = df.sort_values(by=sort_by, ascending=True)
+
+    sorted_products = df_sorted.to_dict(orient='records')
+
+    return render_template('products.html', products=sorted_products, sort_by=sort_by, order=order)
+
 
 @app.route('/author')
 def author():
     return render_template("author.html")
 
+def load_opinions(product_id):
+    try:
+        with open(f"app/data/opinions/{product_id}.json", "r", encoding="UTF-8") as jf:
+            opinions_data = json.load(jf)
+            opinions_df = pd.DataFrame(opinions_data)
+            return opinions_df
+    except FileNotFoundError:
+        print(f"File app/data/opinions/{product_id}.json not found")
+        return pd.DataFrame()
+
+# Route do wyświetlania szczegółów produktu
 @app.route('/product/<product_id>')
 def product(product_id):
     with open(f"app/data/opinions/{product_id}.json", "r", encoding="UTF-8") as jf:
@@ -95,11 +120,74 @@ def product(product_id):
 
     opinions_df = pd.DataFrame(opinions_data)
 
-    sort_by = request.args.get('sort_by')
-    if sort_by in opinions_df.columns:
-        opinions_df = opinions_df.sort_values(by=sort_by)
+    # Przetwarzanie kolumny 'rating'
+    def process_rating(rating):
+        try:
+            if isinstance(rating, str):
+                return float(rating.split('/')[0].replace(',', '.'))
+            elif isinstance(rating, (int, float)):
+                return float(rating)
+            else:
+                return 0
+        except Exception as e:
+            print(f"Error processing rating: {e}")
+            return 0
 
-    return render_template('product.html', product_id=product_id, opinions=opinions_df.to_html(classes='table table-striped', index=False))
+    opinions_df['rating'] = opinions_df['rating'].apply(process_rating)
+
+    opinions_df['pros'].fillna('', inplace=True)
+    opinions_df['cons'].fillna('', inplace=True)
+
+    # Zastępowanie wartości None w innych kolumnach
+    opinions_df.fillna({
+        'rating': 0,
+        'recommendation': 'Brak rekomendacji',
+        'pros': '',
+        'cons': '',
+        'content': '',
+        'date': '',
+        'useful': 0,
+        'useless': 0
+    }, inplace=True)
+
+    # Filtrowanie
+    rating_filter = request.args.get('rating_filter')
+    recommendation_filter = request.args.get('recommendation_filter')
+
+    if rating_filter:
+        try:
+            rating_filter_float = float(rating_filter)
+            opinions_df = opinions_df[opinions_df['rating'] == rating_filter_float]
+        except ValueError:
+            print("Invalid rating filter value")
+
+    if recommendation_filter:
+        opinions_df = opinions_df[opinions_df['recommendation'] == recommendation_filter]
+
+    # Sortowanie
+    sort_by = request.args.get('sort_by')
+    order = request.args.get('order', 'asc')
+
+    if sort_by in opinions_df.columns:
+        opinions_df = opinions_df.sort_values(by=sort_by, ascending=(order == 'asc'))
+
+    ratings = sorted(opinions_df['rating'].unique())
+    recommendations = sorted(opinions_df['recommendation'].unique())
+    columns = opinions_df.columns.tolist()
+
+    return render_template(
+        'product.html', 
+        product_id=product_id, 
+        opinions=opinions_df,
+        ratings=ratings,
+        recommendations=recommendations,
+        columns=columns,
+        selected_rating_filter=rating_filter,
+        selected_recommendation_filter=recommendation_filter,
+        sort_by=sort_by,
+        order=order
+    )
+
 
 @app.route('/product/download_json/<product_id>')
 def download_json(product_id):

@@ -1,18 +1,82 @@
 {% extends "base.html" %}
-{% block title %}To jest strona z opiniamii o produkcie {{ product_id }}.{% endblock %}
+
+{% block title %}
+    Produkt {{ product_id }}
+{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h4>Pobierz opinie:</h4>
-    <div class="mb-3"></div>
-    <div class="btn-toolbar d-flex justify-content-center" role="toolbar" aria-label="Toolbar with button groups">
-        <div class="btn-group" role="group" aria-label="First group">
-            <a href="{{ url_for('download_json', product_id=product_id) }}" class="btn my-custom-outline" role="button">Pobierz JSON</a>
-            <a href="{{ url_for('download_csv', product_id=product_id) }}" class="btn my-custom-outline" role="button">Pobierz CSV</a>
-            <a href="{{ url_for('download_xlsx', product_id=product_id) }}" class="btn my-custom-outline" role="button">Pobierz Excel</a>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <h2 class="my-4">Opinie o produkcie {{ product_id }}</h2>
+
+                <!-- Filtry i sortowanie -->
+                <form action="{{ url_for('product', product_id=product_id) }}" method="GET" class="mb-4">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <select name="rating_filter" class="form-select">
+                                <option value="">Filtruj po ocenie</option>
+                                {% for rating in ratings %}
+                                    <option value="{{ rating }}" {% if rating == selected_rating_filter %} selected {% endif %}>{{ rating }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select name="recommendation_filter" class="form-select">
+                                <option value="">Filtruj po rekomendacji</option>
+                                {% for recommendation in recommendations %}
+                                    <option value="{{ recommendation }}" {% if recommendation == selected_recommendation_filter %} selected {% endif %}>{{ recommendation }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select name="sort_by" class="form-select">
+                                <option value="date" {% if sort_by == 'date' %} selected {% endif %}>Sortuj po dacie</option>
+                                <option value="rating" {% if sort_by == 'rating' %} selected {% endif %}>Sortuj po ocenie</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select name="order" class="form-select">
+                                <option value="asc" {% if order == 'asc' %} selected {% endif %}>Rosnąco</option>
+                                <option value="desc" {% if order == 'desc' %} selected {% endif %}>Malejąco</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary">Filtruj i sortuj</button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Tabela z opiniami -->
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                {% for column in columns %}
+                                    <th>{{ column }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for index, row in opinions.iterrows() %}
+                                <tr>
+                                    <td>{{ row['opinion_id'] }}</td>
+                                    <td>{{ row['author'] }}</td>
+                                    <td>{{ row['recommendation'] }}</td>
+                                    <td>{{ row['rating'] }}</td>
+                                    <td>{{ row['content'] }}</td>
+                                    <td>{{ row['pros'] }}</td>
+                                    <td>{{ row['cons'] }}</td>
+                                    <td>{{ row['useful'] }}</td>
+                                    <td>{{ row['useless'] }}</td>
+                                    <td>{{ row['post_date'] }}</td>
+                                    <td>{{ row['purchase_date'] }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="mb-4"></div>
-</div>
-{{ opinions | safe }}
 {% endblock %}

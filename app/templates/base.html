@@ -12,65 +12,58 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light fixed-top mask-custom shadow-0">
         <div class="container">
-          <a class="navbar-brand" href="#!"><span style="color: #df76ab;">Ceneo</span><span style="color: #fff;"> Web Scraper</span></a>
-          <button class="navbar-toggler" type="button" data-mdb-toggle="collapse"
-            data-mdb-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-            aria-label="Toggle navigation">
-            <i class="fas fa-bars"></i>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto">
-              <li class="nav-item">
-                <a class="nav-link" href="{{url_for('index')}}">Strona główna</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{url_for('author')}}">O autorze</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{url_for('products')}}">Lista produktów</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{url_for('extract')}}">Ekstrakcja produktów</a>
-              </li>
-            </ul>
-            <ul class="navbar-nav d-flex flex-row">
-              <li class="nav-item me-3 me-lg-0">
-                <a class="nav-link" href="#!">
-                  <i class="fas fa-shopping-cart"></i>
-                </a>
-              </li>
-              <li class="nav-item me-3 me-lg-0">
-                <a class="nav-link" href="#!">
-                  <i class="fab fa-twitter"></i>
-                </a>
-              </li>
-              <li class="nav-item me-3 me-lg-0">
-                <a class="nav-link" href="#!">
-                  <i class="fab fa-instagram"></i>
-                </a>
-              </li>
-            </ul>
-          </div>
+            <a class="navbar-brand" href="#!"><span style="color: #df76ab;">Ceneo</span><span style="color: #fff;"> Web Scraper</span></a>
+            <button class="navbar-toggler" type="button" data-mdb-toggle="collapse"
+                data-mdb-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('index')}}">Strona główna</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('author')}}">O autorze</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('products')}}">Lista produktów</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('extract')}}">Ekstrakcja produktów</a>
+                    </li>
+                </ul>
+            </div>
         </div>
-      </nav>
-      <div class="bg-image vh-100"> 
+    </nav>
+
+    <!-- Hero section with background image -->
+    <div class="bg-image vh-100"> 
         <div id="intro">
-          <div class="mask" style="background-color: rgba(250, 182, 162, 0.15);"></div>
+            <div class="mask" style="background-color: rgba(250, 182, 162, 0.15);"></div>
         </div>
-      </div>
-      <section class="text-center">
-        <div class="row align-items-center">
-            <div class="col-md-6 mt-4">
-              <h2 class=""text-center mt-3 mb-3>
-                {% block title %}
-                {% endblock %}
-                </h2>
-                {% block content %}
-                <p>to jest plik bazowy</p>
-                {% endblock %}
+    </div>
+
+    <!-- Main content section -->
+    <section class="text-center">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8 offset-md-2 mt-4">
+                    <h2 class="text-center mt-3 mb-3">
+                        {% block title %}
+                        {% endblock %}
+                    </h2>
+                    <div class="text-center">
+                        {% block content %}
+                        <p>To jest plik bazowy.</p>
+                        {% endblock %}
+                    </div>
+                </div>
             </div>
         </div>
     </section>
+
+    <!-- Footer -->
     <footer class="bg-pink text-white py-4 mt-30">
         <div class="container">
             <div class="row">
