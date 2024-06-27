@@ -112,7 +112,6 @@ def load_opinions(product_id):
         print(f"File app/data/opinions/{product_id}.json not found")
         return pd.DataFrame()
 
-# Route do wyświetlania szczegółów produktu
 @app.route('/product/<product_id>')
 def product(product_id):
     with open(f"app/data/opinions/{product_id}.json", "r", encoding="UTF-8") as jf:
@@ -120,7 +119,6 @@ def product(product_id):
 
     opinions_df = pd.DataFrame(opinions_data)
 
-    # Przetwarzanie kolumny 'rating'
     def process_rating(rating):
         try:
             if isinstance(rating, str):
